@@ -48,6 +48,7 @@
      (.setInt ps 1 amount)
      (.setString ps 2 user-id)
      (.execute ps))
+   (rollback! conn)
    (prepare-transaction! conn transaction-id)
    (catch Object _
      (rollback! conn)
