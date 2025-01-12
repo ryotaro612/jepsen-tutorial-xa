@@ -6,17 +6,17 @@
             [clj-time.local :as l]))
 
 (def db-spec1 {:dbtype "postgresql"
-              :dbname "postgres"
-              :host "127.0.0.1"   
-              :port 55432            
-              :user "postgres"       
-              :password "password"})
+               :dbname "postgres"
+               :host "127.0.0.1"
+               :port 55432
+               :user "postgres"
+               :password "password"})
 
 (def db-spec2 {:dbtype "postgresql"
-              :dbname "postgres"
-              :host "127.0.0.1"   
-              :port 55433 
-              :user "postgres"       
+               :dbname "postgres"
+               :host "127.0.0.1"
+               :port 55433
+               :user "postgres"
                :password "password"})
 
 (defn- do-command!
@@ -41,7 +41,7 @@
 (defn- update!
   [conn user-id amount transaction-id]
   (try+
-   (begin! conn)   
+   (begin! conn)
    (with-open [ps (jdbc/prepare-statement
                    conn
                    "update account set balance = balance + ? where user_id = ?")]
@@ -53,7 +53,7 @@
    (catch Object _
      (rollback! conn)
      #_(log/error (:throwable &throw-context) "unexpected error")
-      (throw+))))
+     (throw+))))
 
 (defn- commit-prepared!
   [conn transaction-id]
@@ -78,9 +78,9 @@
       (jdbc/with-db-connection [{conn2 :connection} db-spec2]
         (update! conn1 "alice" alice transaction-id)
         (try+
-          (update! conn2 "bob" bob transaction-id)
-          (catch Object _
-            (rollback-prepared! conn1 transaction-id)))
+         (update! conn2 "bob" bob transaction-id)
+         (catch Object _
+           (rollback-prepared! conn1 transaction-id)))
         (commit-prepared! conn1 transaction-id)
         (commit-prepared! conn2 transaction-id)))))
 

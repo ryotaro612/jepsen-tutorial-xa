@@ -9,9 +9,9 @@
 (defroutes app-routes
   (GET "/health" [] "OK")
   (POST "/transactions" a
-        (println a)
-        {:status 201
-         :body {:hi "doge"}}))
+    (println a)
+    {:status 201
+     :body {:hi "doge"}}))
 
 (def app
   (-> app-routes

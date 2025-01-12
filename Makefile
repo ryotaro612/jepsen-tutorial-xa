@@ -8,6 +8,10 @@ up-backends: build/docker-compose.yml ## Start the backends
 down-backends: ## Stop the backends
 	docker compose -f build/docker-compose.yml down -v
 
+.PHONY: format
+format: ## Format the code of jepsen-xa
+	cd jepsen-xa && lein cljfmt fix
+
 ##@ Build
 build/docker-compose.yml: docker-compose.template jepsen-xa/src/jepsen_xa/docker.clj $(shell find db)
 	mkdir -p build
