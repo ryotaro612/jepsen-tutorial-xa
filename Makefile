@@ -1,8 +1,23 @@
-##@ Build
-.PHONY: build-db
+##@ Run
+.PHONY: up-backends
+up-backends: build/docker-compose.yml ## Start the backends
+	$(MAKE) down-backends
+	docker compose -f build/docker-compose.yml up -d
 
-build-db: ## Build the database
-	docker build --load -t jepsen-tutorial-xa-db:latest  ./db
+.PHONY: down-backends
+down-backends: ## Stop the backends
+	docker compose -f build/docker-compose.yml down -v
+
+##@ Build
+build/docker-compose.yml: docker-compose.template jepsen-xa/src/jepsen_xa/docker.clj $(shell find db)
+	mkdir -p build
+	cd jepsen-xa && lein with-profiles docker-compose run ../docker-compose.template ../build/docker-compose.yml
+	docker compose -f build/docker-compose.yml build
+
+##@ Clean
+.PHONY: clean
+clean: ## Clean the intermediate files
+	rm -rf build
 
 ##@ Help
 .PHONY: help

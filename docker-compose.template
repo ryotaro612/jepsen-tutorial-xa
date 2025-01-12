@@ -2,10 +2,11 @@ services:
 {{#db-service}}
   {{name}}:
     build:
-      context: db
+      context: ../db
       dockerfile: Dockerfile
-  	  args:
+      args:
         INIT_SQL_SCRIPT: {{script-name}}
+    container_name: jepsen-tutorial-xa-{{name}}
     ports:
       - {{port}}:5432
     environment:

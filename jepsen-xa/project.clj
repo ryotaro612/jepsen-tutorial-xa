@@ -16,14 +16,9 @@
                  ;; https://mvnrepository.com/artifact/slingshot/slingshot
                  [slingshot/slingshot "0.12.2"]
                  [org.clojure/java.jdbc "0.7.12"]
-                 
                  [de.ubercode.clostache/clostache "1.4.0"]
                  [org.postgresql/postgresql "42.7.4"]]
-  ; aot :all is required to handle warnings on compilation
-  ;:aot :all
   :plugins [[dev.weavejester/lein-cljfmt "0.13.0"]]
-
   :profiles {:app {:main jepsen-xa.handler
-                   :aot :all
-                   #_:uberjar #_{:aot :all}}
+                   :aot :all}
              :docker-compose {:main jepsen-xa.docker}})

@@ -3,3 +3,4 @@ CREATE TABLE account(
   balance    int           NOT NULL default 0,
   PRIMARY KEY (user_id)
 );
+
