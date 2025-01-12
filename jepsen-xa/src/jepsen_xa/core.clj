@@ -21,7 +21,7 @@
 
 (defn- do-command!
   [conn sql]
-  (println conn sqlem)
+  #_(println conn sqlem)
   (with-open [ps (jdbc/prepare-statement
                   conn sql)]
     (.execute ps)))
@@ -74,8 +74,8 @@
         {:keys [alice bob]} (if (= sender "alice")
                               {:alice (- amount) :bob amount}
                               {:alice amount :bob (- amount)})]
-    (jdbc/with-db-connection [conn1 db-spec1]
-      (jdbc/with-db-connection [conn2 db-spec2]
+    (jdbc/with-db-connection [{conn1 :connection} db-spec1]
+      (jdbc/with-db-connection [{conn2 :connection} db-spec2]
         (update! conn1 "alice" alice transaction-id)
         (try+
           (update! conn2 "bob" bob transaction-id)

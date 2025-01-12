@@ -1,5 +1,6 @@
 services:
   db1:
+    # command: -c config_file=/etc/postgresq/postgresql.conf    
     build:
       context: db1
       dockerfile: Dockerfile
