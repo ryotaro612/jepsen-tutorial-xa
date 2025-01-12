@@ -1,15 +1,15 @@
 ##@ Run
 .PHONY: up-backends
-up-backends: build/docker-compose.yml ## Start the backends
+up-backends: build/docker-compose.yml ## Start the backends.
 	$(MAKE) down-backends
 	docker compose -f build/docker-compose.yml up -d
 
 .PHONY: down-backends
-down-backends: ## Stop the backends
+down-backends: ## Stop the backends.
 	docker compose -f build/docker-compose.yml down -v
 
 .PHONY: format
-format: ## Format the code of jepsen-xa
+format: ## Format the code of jepsen-xa.
 	cd jepsen-xa && lein cljfmt fix
 
 ##@ Build
@@ -20,7 +20,7 @@ build/docker-compose.yml: docker-compose.template jepsen-xa/src/jepsen_xa/docker
 
 ##@ Clean
 .PHONY: clean
-clean: ## Clean the intermediate files
+clean: ## Clean the intermediate files.
 	rm -rf build
 
 ##@ Help
