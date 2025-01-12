@@ -9,8 +9,6 @@
 
 (defn -main
   [& args]
-  (println args)
   (let [template (generate-docker-compose (nth args 0))]
-
     (spit (nth args 1) template)))
 
