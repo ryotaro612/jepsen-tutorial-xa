@@ -12,6 +12,11 @@ down-backends: ## Stop the backends.
 format: ## Format the code of jepsen-xa.
 	cd jepsen-xa && lein cljfmt fix
 
+##@ Test
+.PHONY: test
+test: ## Run the tests.
+	cd jepsen-xa && lein test
+
 ##@ Build
 build/docker-compose.yml: docker-compose.template jepsen-xa/src/jepsen_xa/docker.clj $(shell find db)
 	mkdir -p build
