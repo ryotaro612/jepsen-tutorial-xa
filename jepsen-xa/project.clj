@@ -7,7 +7,13 @@
                  [compojure "1.7.1"]
                  [ring/ring-core "1.13.0"]
                  [ring/ring-jetty-adapter "1.13.0"]
+                 [ring/ring-json "0.5.1"]
+                 [org.clojure/tools.logging "1.3.0"]
                  [org.clojure/java.jdbc "0.7.12"]
                  [org.postgresql/postgresql "42.7.4"]]
+  ; ここにつけないと警告がコンパイル時にである。a
+  :aot :all
   :profiles {:app {:main jepsen-xa.handler
-                   :uberjar {:aot :all}}})
+                   
+                   #_:uberjar #_{:aot :all}
+                   }})
