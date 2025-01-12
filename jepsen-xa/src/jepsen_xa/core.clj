@@ -1,4 +1,4 @@
-(ns jepsenxa.core)
+(ns jepsen-xa.core)
 
 (defn foo
   "I don't do a whole lot."

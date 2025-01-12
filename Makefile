@@ -1,8 +1,8 @@
-##@ Run
-.PHONY:
+##@ Build
+.PHONY: build-db
 
-run: ## Run the application
-	@go run main.go
+build-db: ## Build the database
+	docker build --load -t jepsen-tutorial-xa-db:latest  ./db
 
 ##@ Help
 .PHONY: help

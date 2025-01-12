@@ -1,0 +1,17 @@
+services:
+  db1:
+    build:
+      context: db1
+      dockerfile: Dockerfile
+    ports:
+      - 55432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+  db2:
+    build:
+      context: db2
+      dockerfile: Dockerfile
+    ports:
+      - 55433:5432
+    environment:
+      POSTGRES_PASSWORD: password
