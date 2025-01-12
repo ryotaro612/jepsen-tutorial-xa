@@ -1,0 +1,13 @@
+services:
+{{#db-service}}
+  {{name}}:
+    build:
+      context: db
+      dockerfile: Dockerfile
+  	  args:
+        INIT_SQL_SCRIPT: {{script-name}}
+    ports:
+      - {{port}}:5432
+    environment:
+      POSTGRES_PASSWORD: password
+{{/db-service}}

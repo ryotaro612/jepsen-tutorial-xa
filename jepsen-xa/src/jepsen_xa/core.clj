@@ -68,7 +68,6 @@
   (let [suffix (f/unparse (f/formatter "hhmmssSSS") (t/now))]
     (str "transaction_" suffix)))
 
-
 (defn transaction!
   [sender amount]
   (let [transaction-id (generate-transaction-id)
