@@ -3,6 +3,7 @@
             [integrant.core :as ig]
             [jepsen-xa.boundary.log]
             [jepsen-xa.transaction]
+            [jepsen-xa.boundary.balance]
             [jepsen-xa.spec]
             [jepsen-xa.boundary.db]            
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
@@ -23,7 +24,9 @@
    ::app {:log (ig/ref :jepsen-xa.boundary.log/level)
           :transaction (ig/ref :jepsen-xa.transaction/transaction)}
    :jepsen-xa.transaction/transaction {:db-specs (ig/ref :jepsen-xa.boundary.db/specs)
-                                       :logger (ig/ref :jepsen-xa.boundary.log/level)}
+                                       :logger (ig/ref :jepsen-xa.boundary.log/level)
+                                       :balance-update (ig/ref :jepsen-xa.boundary.balance/update)}
+   :jepsen-xa.boundary.balance/update (ig/ref :jepsen-xa.boundary.log/level)
    ::server {:port port
              :join join
              :app (ig/ref ::app)}})
