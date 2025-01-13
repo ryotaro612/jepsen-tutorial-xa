@@ -2,6 +2,7 @@
   (:require [ring.adapter.jetty :as jetty]
             [integrant.core :as ig]
             [jepsen-xa.boundary.log]
+            [jepsen-xa.log]
             [jepsen-xa.transaction]
             [jepsen-xa.boundary.balance]
             [jepsen-xa.spec]

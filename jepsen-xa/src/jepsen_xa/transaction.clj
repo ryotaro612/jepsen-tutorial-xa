@@ -2,6 +2,7 @@
   (:require [integrant.core :as ig]
             [clojure.spec.alpha :as s]
             [jepsen-xa.balance :as b]
+            [jepsen-xa.log]
             [slingshot.slingshot :refer [throw+ try+]]
             [jepsen-xa.db :as db]
             [jepsen-xa.log :as l]))
@@ -24,16 +25,18 @@
   :ret ::compute-delta-ret)
 
 (defn- transaction!
-  [{:keys [logger db-spec1 db-spec2 balance-update]} sender amount]
+  [{:keys [logger db-spec1 db-spec2 balance-update] :as deps} sender amount]
   (l/debug logger {:message "transaction!"
                    :sender sender
                    :amount amount})
   (let [{:keys [alice bob]} (compute-delta sender amount)
         transaction-id (db/generate-transaction-id)]
     (db/with-connection [alice-conn db-spec1]
+
       (db/begin! alice-conn)      
       (try+
-       (balance-update alice-conn "alice" alice)
+        (b/add-balance balance-update alice-conn "alice" alice)
+        (db/prepare-transaction! alice-conn transaction-id)
        (catch Object _
          (db/rollback! alice-conn)
          (throw+)))
@@ -44,7 +47,8 @@
            (db/rollback! alice-conn)
            (throw+)))
         (try+
-         (balance-update bob-conn "bob" bob)
+        (b/add-balance balance-update bob-conn "bob" bob)
+        (db/prepare-transaction! bob-conn transaction-id)
          (catch Object _
            (try+
             (db/rollback! bob-conn)
@@ -52,13 +56,14 @@
               (db/rollback-prepared! alice-conn transaction-id)))
            (throw+)))
         (try+
-         (db/commit-prepared! alice-conn transaction-id)
+          (db/commit-prepared! alice-conn transaction-id)
          (finally
           (db/commit-prepared! bob-conn transaction-id)))))))
 
-(s/def ::balance-update #(satisfies? b/BalanceUpdate %))
+(s/def ::db-spec1 #(map? %))
+(s/def ::db-spec2 #(map? %))
 (s/def ::transaction-deps
-  (s/keys :req-un [::balance-update]))
+  (s/keys :req-un [:jepsen-xa.log/logger :jepsen-xa.balance/balance-update ::db-spec1 ::db-spec2]))
 (s/def ::transaction-ret #(or (= {:error :invalid-arguments} %) (nil? %)))
 (s/fdef transaction!
   :args (s/cat :deps ::transaction-deps
@@ -75,7 +80,7 @@
                         :amount %2
                         :error "invalid input"})
        {:error :invalid-arguments})
-     (transaction! {:logger logger
+       (transaction! {:logger logger
                     :balance-update balance-update
                     :db-spec1 db-spec1
                     :db-spec2 db-spec2}

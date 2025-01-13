@@ -1,4 +1,4 @@
-**/user.clj
+dev/user.clj
 /target
 /classes
 /checkouts

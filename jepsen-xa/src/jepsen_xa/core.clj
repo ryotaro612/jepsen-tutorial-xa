@@ -83,6 +83,3 @@
            (rollback-prepared! conn1 transaction-id)))
         (commit-prepared! conn1 transaction-id)
         (commit-prepared! conn2 transaction-id)))))
-
-
-
