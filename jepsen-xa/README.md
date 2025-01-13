@@ -8,13 +8,18 @@ A Clojure library designed to ... well, that part is up to you.
 
 Run the app in REPL.
 ```clojure
-(def system (ig/init 
-  (load-config {:log/level {:app :debug :other :debug}
-                :instrument true
-                :server {:port 3000
-                         :join false}})))
+(def system
+  (do
+    (if (resolve 'system)
+      (ig/halt! system))
+    (ig/init 
+      (load-config {:log/level {:app :debug :other :info}
+                    :instrument true
+                    :server {:port 3000
+                             :join false}
+                    :db {:db1 {:port 55432 :host "127.0.0.1"}
+                         :db2 {:port 55433 :host "127.0.0.1"}}}))))
 ```
-
 ## License
 
 Copyright © 2025 Ryotaro Nakamura

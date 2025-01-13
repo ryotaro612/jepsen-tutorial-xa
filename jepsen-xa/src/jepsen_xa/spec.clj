@@ -7,7 +7,7 @@
   (timbre/debug {:message "instrument"
                  :enable enable})  
   (if enable
-      (stest/instrument)
+ra      (stest/instrument)
       (stest/unstrument))
   enable)
 
