@@ -28,10 +28,23 @@
   (let [{:keys [alice bob]} (compute-delta sender amount)]
     ))
 
+(s/def ::transaction-ret #(or (= {:error :invalid-arguments} %) (nil? %)))
+
+(s/fdef transaction!
+  :args (s/cat :sender ::sender
+               :amount ::amount
+               :logger any?
+               :db-spec1 any?
+               :db-spec2 any?)
+  :ret ::transaction-ret)
+
+
 (defmethod ig/init-key ::transaction [_ {:keys [logger] {:keys [db-spec1 db-spec2]} :db-specs}]
   #(if (or (s/explain-data ::sender %1) (s/explain-data ::amount %2))
-     (l/debug logger {:message "transaction!"
-                      :sender %1
-                      :amount %2
-                      :error "invalid input"})
+     (do
+       (l/debug logger {:message "transaction!"
+                        :sender %1
+                        :amount %2
+                        :error "invalid input"})
+       {:error :invalid-arguments})
      (transaction! %1 %2 logger db-spec1 db-spec2)))

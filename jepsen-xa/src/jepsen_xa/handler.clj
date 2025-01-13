@@ -34,9 +34,11 @@
   (defroutes app-routes
     (GET "/v1/health" [] {:status 200 :body {:status "up"}})
     (POST "/transactions" {{:keys [sender amount]} :params}
-      (transaction sender amount)
-      {:status 201
-       :body {:hi "doge"}})))
+      (let [result (transaction sender amount)]
+        (cond
+          (= result {:error :invalid-arguments}) {:status 400 :body {:message "invalid arguments"}}
+          (nil? result) {:status 201 :body {:message "success"}}
+          :else {:status 500 :body {:message "internal server error"}})))))
 
 (defn -main []
   (ig/init (load-config {})))
