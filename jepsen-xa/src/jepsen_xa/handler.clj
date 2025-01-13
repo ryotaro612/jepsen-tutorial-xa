@@ -1,10 +1,10 @@
 (ns jepsen-xa.handler
   (:require [ring.adapter.jetty :as jetty]
             [integrant.core :as ig]
-            [jepsen-xa.log]
+            [jepsen-xa.boundary.log]
             [jepsen-xa.transaction]
             [jepsen-xa.spec]
-            [jepsen-xa.db]            
+            [jepsen-xa.boundary.db]            
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.util.response :refer [response]]
@@ -16,13 +16,14 @@
   [{:keys [instrument db]
     {:keys [app other]} :log/level
     {:keys [join port]} :server}]
-  {:jepsen-xa.log/level {:app app :other other}
+  {:jepsen-xa.boundary.log/level {:app app :other other}
    :jepsen-xa.spec/instrument {:enable instrument
-                               :log (ig/ref :jepsen-xa.log/level)}
-   :jepsen-xa.db/specs db
-   ::app {:log (ig/ref :jepsen-xa.log/level)
+                               :log (ig/ref :jepsen-xa.boundary.log/level)}
+   :jepsen-xa.boundary.db/specs db
+   ::app {:log (ig/ref :jepsen-xa.boundary.log/level)
           :transaction (ig/ref :jepsen-xa.transaction/transaction)}
-   :jepsen-xa.transaction/transaction (ig/ref :jepsen-xa.db/specs)
+   :jepsen-xa.transaction/transaction {:db-specs (ig/ref :jepsen-xa.boundary.db/specs)
+                                       :logger (ig/ref :jepsen-xa.boundary.log/level)}
    ::server {:port port
              :join join
              :app (ig/ref ::app)}})
