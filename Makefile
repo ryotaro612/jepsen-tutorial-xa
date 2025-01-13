@@ -27,6 +27,7 @@ build/docker-compose.yml: docker-compose.template jepsen-xa/src/jepsen_xa/docker
 .PHONY: clean
 clean: ## Clean the intermediate files.
 	rm -rf build
+	cd jepsen-xa && lein clean
 
 ##@ Help
 .PHONY: help
