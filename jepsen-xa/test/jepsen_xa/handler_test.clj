@@ -8,8 +8,12 @@
   (testing "This configuration can be used in REPL."
     (is (= {:jepsen-xa.log/level {:app :debug, :other :debug},		  
 		    :jepsen-xa.spec/instrument
-		    {:enable true, :log (ig/ref :jepsen-xa.log/level)}}
+		    {:enable true, :log (ig/ref :jepsen-xa.log/level)}
+            :jepsen-xa.handler/app {:log (ig/ref :jepsen-xa.log/level)}
+            :jepsen-xa.handler/server{:port 3000, :join false :app (ig/ref :jepsen-xa.handler/app)}}
            (load-config {:log/level {:app :debug :other :debug}
-                           :instrument true
-                           :port 3000}))
+                         :instrument true
+                         :server {:port 3000
+                                  :join false}
+                         }))
         "Failure")))

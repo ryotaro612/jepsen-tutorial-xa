@@ -4,7 +4,16 @@ A Clojure library designed to ... well, that part is up to you.
 
 ## Usage
 
-FIXME
+### Development
+
+Run the app in REPL.
+```clojure
+(def system (ig/init 
+  (load-config {:log/level {:app :debug :other :debug}
+                :instrument true
+                :server {:port 3000
+                         :join false}})))
+```
 
 ## License
 

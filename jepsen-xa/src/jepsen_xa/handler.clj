@@ -10,12 +10,18 @@
 (defn load-config
   "See configuration examples."
   [{{:keys [app other]} :log/level
-    :keys [instrument port]}]
+    :keys [instrument]
+    {:keys [join port]} :server}]
   {:jepsen-xa.log/level {:app app :other other}
-   :jepsen-xa.spec/instrument {:enable instrument :log (ig/ref :jepsen-xa.log/level)}})
+   :jepsen-xa.spec/instrument {:enable instrument
+                               :log (ig/ref :jepsen-xa.log/level)}
+   ::app {:log (ig/ref :jepsen-xa.log/level)}
+   ::server {:port port
+             :join join
+             :app (ig/ref ::app)}})
 
 (defroutes app-routes
-  (GET "/health" [] "OK")
+  (GET "/v1/health" [] {:status 200 :body {:status "up"}})
   (POST "/transactions" a
     (println a)
     {:status 201
@@ -31,4 +37,14 @@
   (ig/init (load-config {})))
                      ; :join ? true
                     ; https://github.com/ring-clojure/ring/wiki/Getting-Started
-; #_(jetty/run-jetty app {:port 3000}
+                                        ; #_(jetty/run-jetty app {:port 3000}
+
+(defmethod ig/init-key ::app [_ _]
+  app)
+
+(defmethod ig/init-key ::server [_ {:keys [app port join]}]
+  (let [server (jetty/run-jetty app {:port port :join? join})]
+    server))
+
+(defmethod ig/halt-key! ::server [_ server]
+  (.stop server))

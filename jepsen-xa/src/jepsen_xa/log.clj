@@ -1,4 +1,6 @@
-(ns jepsen-xa.log
+(ns ^{:doc "The logging configuration for this application."
+       :author "Ryotaro Nakamura"}
+    jepsen-xa.log
   (:require [taoensso.timbre :as timbre]
             [integrant.core :as ig]))
 
