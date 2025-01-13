@@ -32,33 +32,56 @@
   (let [{:keys [alice bob]} (compute-delta sender amount)
         transaction-id (db/generate-transaction-id)]
     (db/with-connection [alice-conn db-spec1]
-
-      (db/begin! alice-conn)      
+      (db/begin! alice-conn)
+      (l/debug logger {:transaction-id transaction-id
+                       :message "alice begin"})
       (try+
         (b/add-balance balance-update alice-conn "alice" alice)
+        (l/debug logger {:transaction-id transaction-id
+                         :message "alice add balance"})
         (db/prepare-transaction! alice-conn transaction-id)
+        (l/debug logger {:transaction-id transaction-id
+                         :message "alice prepare-transaction"})
        (catch Object _
          (db/rollback! alice-conn)
          (throw+)))
       (db/with-connection [bob-conn db-spec2]
         (try+
-         (db/begin! bob-conn)
-         (catch Object _
-           (db/rollback! alice-conn)
-           (throw+)))
+          (db/begin! bob-conn)
+          (l/debug logger {:transaction-id transaction-id
+                         :message "bob begin"})
+        (catch Object e
+          (db/error logger {:transaction-id transaction-id
+                            :message "bob begin"
+                            :error e})
+          (db/rollback! alice-conn)
+          (throw+)))
         (try+
-        (b/add-balance balance-update bob-conn "bob" bob)
-        (db/prepare-transaction! bob-conn transaction-id)
+          (b/add-balance balance-update bob-conn "bob" bob)
+          (db/prepare-transaction! bob-conn transaction-id)
+          (l/debug logger {:transaction-id transaction-id
+                           :user "bob"
+                           :message "prepare-transaction"})
          (catch Object _
            (try+
-            (db/rollback! bob-conn)
+             (db/rollback! bob-conn)
+             (l/debug logger {:transaction-id transaction-id
+                              :user "bob"
+                              :message "rollback"})
             (finally
               (db/rollback-prepared! alice-conn transaction-id)))
            (throw+)))
         (try+
           (db/commit-prepared! alice-conn transaction-id)
+          (l/debug logger {:transaction-id transaction-id
+                           :user "alice"
+                           :message "commit prepared"})
          (finally
-          (db/commit-prepared! bob-conn transaction-id)))))))
+           (db/commit-prepared! bob-conn transaction-id)
+          (l/debug logger {:transaction-id transaction-id
+                           :user "bob"
+                           :message "commit prepared"})           
+           ))))))
 
 (s/def ::db-spec1 #(map? %))
 (s/def ::db-spec2 #(map? %))
