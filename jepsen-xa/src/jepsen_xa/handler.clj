@@ -48,7 +48,7 @@
         db1-host (or (System/getenv "DB1_HOST") "127.0.0.1")
         db1-port (parse-long (or (System/getenv "DB1_PORT") "5432"))
         db2-host (or (System/getenv "DB2_HOST") "127.0.0.1")
-        db2-port (parse-long (or (System/getenv "DB2_PORT") "5433"))
+        db2-port (parse-long (or (System/getenv "DB2_PORT") "5432"))
         app-log-level (log/log-level (System/getenv "APP_LOG_LEVEL") :info)
         other-log-level (log/log-level (System/getenv "OTHER_LOG_LEVEL") :info)]
     (ig/init

@@ -22,5 +22,7 @@
   :profiles {:app {:main jepsen-xa.handler
                    :uberjar-name "jepsen-xa-app-standalone.jar"
                    :aot :all}
-             :docker-compose {:main jepsen-xa.docker}
-             :dev {:dependencies[[integrant/repl "0.4.0"]]}})
+             :docker-compose {:main docker
+                              :source-paths ["dev"]}
+             :dev {:source-paths ["dev"]
+                   :dependencies[[integrant/repl "0.4.0"]]}})

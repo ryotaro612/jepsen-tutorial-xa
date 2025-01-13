@@ -6,9 +6,19 @@ services:
       dockerfile: Dockerfile
       args:
         INIT_SQL_SCRIPT: {{script-name}}
-    container_name: jepsen-tutorial-xa-{{name}}
+    container_name: {{name}}
     ports:
       - {{port}}:5432
     environment:
       POSTGRES_PASSWORD: password
 {{/db-service}}
+  app:
+    build:
+      context: ../jepsen-xa
+    ports:
+      - 3000:3000
+    environment:
+      PORT: "3000"
+      DB1_HOST: {{db1-name}}
+      DB2_HOST: {{db2-name}}
+      APP_LOG_LEVEL: DEBUG
