@@ -5,16 +5,16 @@
 
 (defmethod ig/init-key ::instrument [_ {:keys [enable]}]
   (timbre/debug {:message "instrument"
-                 :enable enable})  
+                 :enable enable})
   (if enable
-      (stest/instrument)
-      (stest/unstrument))
+    (stest/instrument)
+    (stest/unstrument))
   enable)
 
 (defmethod ig/halt-key! ::instrument [_ enable]
   (if enable
     (do
-        (timbre/debug {:message "instrument"
-                       :enable false})
-        (stest/unstrument))))
+      (timbre/debug {:message "instrument"
+                     :enable false})
+      (stest/unstrument))))
 

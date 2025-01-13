@@ -6,7 +6,7 @@
             [jepsen-xa.transaction]
             [jepsen-xa.boundary.balance]
             [jepsen-xa.spec]
-            [jepsen-xa.boundary.db]            
+            [jepsen-xa.boundary.db]
             [ring.middleware.json :refer [wrap-json-response wrap-json-params]]
             [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.util.response :refer [response]]
@@ -32,7 +32,6 @@
              :join join
              :app (ig/ref ::app)}})
 
-
 (defn make-app-routes
   [transaction]
   (defroutes app-routes
@@ -44,23 +43,22 @@
           (nil? result) {:status 201 :body {:message "success"}}
           :else {:status 500 :body {:message "internal server error"}})))))
 
-
 (defn -main []
   (let [port (parse-long (or (System/getenv "PORT") "3000"))
-        db1-host (or (System/getenv "DB1_HOST") "127.0.0.1")        
+        db1-host (or (System/getenv "DB1_HOST") "127.0.0.1")
         db1-port (parse-long (or (System/getenv "DB1_PORT") "5432"))
         db2-host (or (System/getenv "DB2_HOST") "127.0.0.1")
         db2-port (parse-long (or (System/getenv "DB2_PORT") "5433"))
         app-log-level (log/log-level (System/getenv "APP_LOG_LEVEL") :info)
         other-log-level (log/log-level (System/getenv "OTHER_LOG_LEVEL") :info)]
     (ig/init
-                  (load-config
-                   {:log/level {:app app-log-level :other other-log-level}
+     (load-config
+      {:log/level {:app app-log-level :other other-log-level}
        :instrument false
-       :server {:port port     
+       :server {:port port
                 :join true}
        :db {:db1 {:host db1-host :port db1-port}
-            :db2 {:host db2-host :port db2-port}}}))    ))
+            :db2 {:host db2-host :port db2-port}}}))))
 
 (defmethod ig/init-key ::app [_ {:keys [transaction]}]
   (-> (make-app-routes transaction)

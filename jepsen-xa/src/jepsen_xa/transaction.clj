@@ -36,52 +36,51 @@
       (l/debug logger {:transaction-id transaction-id
                        :message "alice begin"})
       (try+
-        (b/add-balance balance-update alice-conn "alice" alice)
-        (l/debug logger {:transaction-id transaction-id
-                         :message "alice add balance"})
-        (db/prepare-transaction! alice-conn transaction-id)
-        (l/debug logger {:transaction-id transaction-id
-                         :message "alice prepare-transaction"})
+       (b/add-balance balance-update alice-conn "alice" alice)
+       (l/debug logger {:transaction-id transaction-id
+                        :message "alice add balance"})
+       (db/prepare-transaction! alice-conn transaction-id)
+       (l/debug logger {:transaction-id transaction-id
+                        :message "alice prepare-transaction"})
        (catch Object _
          (db/rollback! alice-conn)
          (throw+)))
       (db/with-connection [bob-conn db-spec2]
         (try+
-          (db/begin! bob-conn)
-          (l/debug logger {:transaction-id transaction-id
-                         :message "bob begin"})
-        (catch Object e
-          (l/error logger {:transaction-id transaction-id
+         (db/begin! bob-conn)
+         (l/debug logger {:transaction-id transaction-id
+                          :message "bob begin"})
+         (catch Object e
+           (l/error logger {:transaction-id transaction-id
                             :message "bob begin"
                             :error e})
-          (db/rollback! alice-conn)
-          (throw+)))
+           (db/rollback! alice-conn)
+           (throw+)))
         (try+
-          (b/add-balance balance-update bob-conn "bob" bob)
-          (db/prepare-transaction! bob-conn transaction-id)
-          (l/debug logger {:transaction-id transaction-id
-                           :user "bob"
-                           :message "prepare-transaction"})
+         (b/add-balance balance-update bob-conn "bob" bob)
+         (db/prepare-transaction! bob-conn transaction-id)
+         (l/debug logger {:transaction-id transaction-id
+                          :user "bob"
+                          :message "prepare-transaction"})
          (catch Object _
            (try+
-             (db/rollback! bob-conn)
-             (l/debug logger {:transaction-id transaction-id
-                              :user "bob"
-                              :message "rollback"})
+            (db/rollback! bob-conn)
+            (l/debug logger {:transaction-id transaction-id
+                             :user "bob"
+                             :message "rollback"})
             (finally
               (db/rollback-prepared! alice-conn transaction-id)))
            (throw+)))
         (try+
-          (db/commit-prepared! alice-conn transaction-id)
-          (l/debug logger {:transaction-id transaction-id
-                           :user "alice"
-                           :message "commit prepared"})
+         (db/commit-prepared! alice-conn transaction-id)
+         (l/debug logger {:transaction-id transaction-id
+                          :user "alice"
+                          :message "commit prepared"})
          (finally
            (db/commit-prepared! bob-conn transaction-id)
-          (l/debug logger {:transaction-id transaction-id
-                           :user "bob"
-                           :message "commit prepared"})           
-           ))))))
+           (l/debug logger {:transaction-id transaction-id
+                            :user "bob"
+                            :message "commit prepared"})))))))
 
 (s/def ::db-spec1 #(map? %))
 (s/def ::db-spec2 #(map? %))
@@ -103,7 +102,7 @@
                         :amount %2
                         :error "invalid input"})
        {:error :invalid-arguments})
-       (transaction! {:logger logger
+     (transaction! {:logger logger
                     :balance-update balance-update
                     :db-spec1 db-spec1
                     :db-spec2 db-spec2}

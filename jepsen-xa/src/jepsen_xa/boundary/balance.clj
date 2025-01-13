@@ -4,7 +4,6 @@
             [clojure.java.jdbc :as jdbc]
             [integrant.core :as ig]))
 
-
 (defrecord BalanceUpdatePsql [logger]
   b/BalanceUpdate
   (add-balance [_ conn user-id amount]

@@ -34,7 +34,6 @@
   (let [suffix (f/unparse (f/formatter "hhmmssSSS") (t/now))]
     (str "transaction_" suffix)))
 
-
 (defmacro with-connection [[conn db-spec] & body]
   `(jdbc/with-db-connection [{~conn :connection} ~db-spec]
      ~@body))

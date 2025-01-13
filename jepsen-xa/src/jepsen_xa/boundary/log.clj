@@ -1,6 +1,6 @@
 (ns ^{:doc "The logging configuration for this application."
       :author "Ryotaro Nakamura"}
-    jepsen-xa.boundary.log
+ jepsen-xa.boundary.log
   (:require [taoensso.timbre :as timbre]
             [jepsen-xa.log]
             [integrant.core :as ig]))
@@ -12,7 +12,7 @@
       (timbre/debug message)))
   (info [this message]
     (timbre/with-config config
-      (timbre/info message)))  
+      (timbre/info message)))
   (error [this message]
     (timbre/with-config config
       (timbre/error message))))
@@ -22,7 +22,6 @@
   ;https://taoensso.github.io/timbre/taoensso.timbre.html#var-*config*
   (merge timbre/default-config
          {:min-level [[#{"jepsen-xa.*"} app] [#{"*"} other]]}))
-
 
 (defmethod ig/init-key ::level [_ {:keys [app other] :as opts}]
   (let [config (merge timbre/default-config (load-config app other))]

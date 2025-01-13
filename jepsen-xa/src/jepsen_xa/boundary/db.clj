@@ -11,8 +11,8 @@
 (defn- make-spec
   [partial]
   (merge   {:dbtype "postgresql"
-   :dbname "postgres"
-   :user "postgres"
+            :dbname "postgres"
+            :user "postgres"
             :password "password"}
            partial))
 
