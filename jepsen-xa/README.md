@@ -1,4 +1,4 @@
-# jepsenxa
+# jepsen-xa
 
 A Clojure library designed to ... well, that part is up to you.
 
@@ -8,7 +8,7 @@ FIXME
 
 ## License
 
-Copyright © 2025 FIXME
+Copyright © 2025 Ryotaro Nakamura
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
