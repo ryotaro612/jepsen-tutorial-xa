@@ -17,6 +17,7 @@
                  [slingshot/slingshot "0.12.2"]
                  [org.clojure/java.jdbc "0.7.12"]
                  [de.ubercode.clostache/clostache "1.4.0"]
+                 [jepsen/jepsen "0.3.7"]                 
                  [org.postgresql/postgresql "42.7.4"]]
   :plugins [[dev.weavejester/lein-cljfmt "0.13.0"]]
   :profiles {:app {:main jepsen-xa.handler

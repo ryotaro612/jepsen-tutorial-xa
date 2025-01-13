@@ -1,5 +1,5 @@
 services:
-{{#db-service}}
+{{#db-services}}
   {{name}}:
     build:
       context: ../db
@@ -11,7 +11,7 @@ services:
       - {{port}}:5432
     environment:
       POSTGRES_PASSWORD: password
-{{/db-service}}
+{{/db-services}}
   app:
     build:
       context: ../jepsen-xa

@@ -1,3 +1,0 @@
-(ns jepsen-xa.rdb)
-
-()

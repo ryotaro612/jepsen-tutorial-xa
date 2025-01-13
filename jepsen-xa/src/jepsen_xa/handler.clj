@@ -43,6 +43,19 @@
           (nil? result) {:status 201 :body {:message "success"}}
           :else {:status 500 :body {:message "internal server error"}})))))
 
+(defmethod ig/init-key ::app [_ {:keys [transaction]}]
+  (-> (make-app-routes transaction)
+      wrap-keyword-params
+      wrap-json-params
+      wrap-json-response))
+
+(defmethod ig/init-key ::server [_ {:keys [app port join]}]
+  (let [server (jetty/run-jetty app {:port port :join? join})]
+    server))
+
+(defmethod ig/halt-key! ::server [_ server]
+  (.stop server))
+
 (defn -main []
   (let [port (parse-long (or (System/getenv "PORT") "3000"))
         db1-host (or (System/getenv "DB1_HOST") "127.0.0.1")
@@ -59,16 +72,3 @@
                 :join true}
        :db {:db1 {:host db1-host :port db1-port}
             :db2 {:host db2-host :port db2-port}}}))))
-
-(defmethod ig/init-key ::app [_ {:keys [transaction]}]
-  (-> (make-app-routes transaction)
-      wrap-keyword-params
-      wrap-json-params
-      wrap-json-response))
-
-(defmethod ig/init-key ::server [_ {:keys [app port join]}]
-  (let [server (jetty/run-jetty app {:port port :join? join})]
-    server))
-
-(defmethod ig/halt-key! ::server [_ server]
-  (.stop server))
