@@ -20,6 +20,7 @@
                  [org.postgresql/postgresql "42.7.4"]]
   :plugins [[dev.weavejester/lein-cljfmt "0.13.0"]]
   :profiles {:app {:main jepsen-xa.handler
+                   :uberjar-name "jepsen-xa-app-standalone.jar"
                    :aot :all}
              :docker-compose {:main jepsen-xa.docker}
              :dev {:dependencies[[integrant/repl "0.4.0"]]}})

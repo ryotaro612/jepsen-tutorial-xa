@@ -9,7 +9,13 @@
   jepsen-xa.log/Logger
   (debug [this message]
     (timbre/with-config config
-      (timbre/debug message))))
+      (timbre/debug message)))
+  (info [this message]
+    (timbre/with-config config
+      (timbre/info message)))  
+  (error [this message]
+    (timbre/with-config config
+      (timbre/error message))))
 
 (defn load-config
   [app other]

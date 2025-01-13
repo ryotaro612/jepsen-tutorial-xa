@@ -51,7 +51,7 @@
           (l/debug logger {:transaction-id transaction-id
                          :message "bob begin"})
         (catch Object e
-          (db/error logger {:transaction-id transaction-id
+          (l/error logger {:transaction-id transaction-id
                             :message "bob begin"
                             :error e})
           (db/rollback! alice-conn)
