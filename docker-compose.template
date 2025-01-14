@@ -16,7 +16,7 @@ services:
     build:
       context: ../jepsen-xa
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       PORT: "3000"
       DB1_HOST: {{db1-name}}

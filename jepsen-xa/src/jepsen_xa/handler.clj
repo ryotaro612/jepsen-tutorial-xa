@@ -20,7 +20,7 @@
     {:keys [join port]} :server}]
   {:jepsen-xa.boundary.log/level {:app app :other other}
    :jepsen-xa.spec/instrument {:enable instrument
-                               :log (ig/ref :jepsen-xa.boundary.log/level)}
+                               :logger (ig/ref :jepsen-xa.boundary.log/level)}
    :jepsen-xa.boundary.db/specs db
    ::app {:log (ig/ref :jepsen-xa.boundary.log/level)
           :transaction (ig/ref :jepsen-xa.transaction/transaction)}

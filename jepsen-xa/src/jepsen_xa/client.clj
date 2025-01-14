@@ -8,16 +8,14 @@
   [{:keys [instrument db-specs]
     {:keys [app other]} :logger}]
   {:jepsen-xa.boundary.log/level {:app app :other other}
-   :jepsen-xa.spec/instrument instrument})
+   :jepsen-xa.spec/instrument {:enable instrument
+                               :logger (ig/ref :jepsen-xa.boundary.log/level)}})
 
 (defn make-xa-test
   []
   (merge tests/noop-test
          {:pure-generators true}))
 
-(defn run!
-  []
-  )
 
 (defn -main
   [& args]

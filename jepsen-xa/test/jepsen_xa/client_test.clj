@@ -7,7 +7,8 @@
 (deftest test-load-config
   (testing "This configuration can be used in REPL."
     (is (=   {:jepsen-xa.boundary.log/level {:app :debug :other :info}
-              :jepsen-xa.spec/instrument true}
+              :jepsen-xa.spec/instrument {:enable true
+                                          :logger (ig/ref :jepsen-xa.boundary.log/level)}}
              
            (load-config {:logger {:app :debug :other :info}
                          :instrument true

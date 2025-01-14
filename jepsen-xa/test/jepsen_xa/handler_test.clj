@@ -8,7 +8,7 @@
   (testing "This configuration can be used in REPL."
     (is (= {:jepsen-xa.boundary.log/level {:app :debug :other :debug},
             :jepsen-xa.spec/instrument {:enable true
-                                        :log (ig/ref :jepsen-xa.boundary.log/level)}
+                                        :logger (ig/ref :jepsen-xa.boundary.log/level)}
             :jepsen-xa.handler/app {:log (ig/ref :jepsen-xa.boundary.log/level)
                                     :transaction (ig/ref :jepsen-xa.transaction/transaction)}
             :jepsen-xa.boundary.db/specs {:db1 {:port 55432 :host "127.0.0.1"}
