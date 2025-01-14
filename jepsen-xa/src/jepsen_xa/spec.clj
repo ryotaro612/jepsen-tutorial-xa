@@ -5,10 +5,8 @@
             [integrant.core :as ig]))
 
 (defmethod ig/init-key ::instrument [_ {:keys [enable logger]}]
-  (println "doge" logger)
   (log/debug logger {:message "instrument"
                      :enable enable})
-  (println "doge2")
   (if enable
     (stest/instrument)
     (stest/unstrument))
