@@ -1,6 +1,7 @@
 (ns jepsen-xa.client
   (:require [integrant.core :as ig]
             [jepsen.tests :as tests]
+            [jepsen.control.docker :as docker]            
             [jepsen-xa.log :as log]
             [jepsen.cli :as cli]))
 
@@ -16,10 +17,18 @@
                              :logger (ig/ref :jepsen-xa.boundary.log/level)}})
 
 (defn make-xa-test
-  [opts]
+  [_]
   (merge tests/noop-test
-         {:pure-generators true}
-         opts))
+         {:name "xa"
+          :pure-generators true
+          :remote docker/docker
+                                        ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
+          :nodes [
+                  "127.0.0.1:55432"                  ,
+                  "127.0.0.1:55433",
+                  "127.0.0.1:3001"
+                  ]          
+          }))
 
 (defmethod ig/init-key ::test-fn [_ _]
   make-xa-test)
@@ -27,7 +36,7 @@
 (defmethod ig/init-key ::runner [_ {:keys [test-fn logger]}]
   (log/debug logger {:test-fn test-fn})
   #(cli/run!
-    (cli/single-test-cmd {:test-fn test-fn}) ["test"]))
+   (cli/single-test-cmd {:test-fn test-fn}) ["test"]))
 
 (defn -main
   [& args]

@@ -26,4 +26,5 @@
              :docker-compose {:main docker
                               :source-paths ["dev"]}
              :dev {:source-paths ["dev"]
-                   :dependencies[[integrant/repl "0.4.0"]]}})
+                   :dependencies[[integrant/repl "0.4.0"]]
+                   :plugins[[com.jakemccrary/lein-test-refresh "0.25.0"]]}})

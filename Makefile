@@ -23,7 +23,7 @@ build/docker-compose.yml: docker-compose.template jepsen-xa/dev/docker.clj $(she
 	cd jepsen-xa && lein with-profiles docker-compose run ../docker-compose.template ../build/docker-compose.yml
 	docker compose -f build/docker-compose.yml build
 
-jepsen-xa/target/jepsen-xa-app-standalone.jar: $(shell find jepsen-xa/src)
+jepsen-xa/target/jepsen-xa-app-standalone.jar: $(shell find jepsen-xa/src -regex "[^\#]+")
 	cd jepsen-xa && lein uberjar
 
 ##@ Clean
