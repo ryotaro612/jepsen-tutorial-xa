@@ -4,6 +4,7 @@
             [jepsen.os.debian :as debian]
             [jepsen
              [db :as db]
+             [client :as client]             
              [tests :as tests]
              [cli :as cli]]
             [jepsen-xa.log :as log]))
@@ -23,6 +24,7 @@
 ; coreを実行して試す。コマンドラインから実行するケースとreplを用いする。
 (defn make-xa-test
   [opts]
+  ; TODO reify dbでログを出力できるようにする
   (merge tests/noop-test
          {:name "xa"
           :pure-generators true
