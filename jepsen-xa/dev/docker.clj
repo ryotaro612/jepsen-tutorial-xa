@@ -1,22 +1,23 @@
 (ns docker
-  (:require [clostache.parser :as p]))
-
-(def env
-  (let [db1-name "jepsen-tutorial-xa-db1"
-        db2-name "jepsen-tutorial-xa-db2"]
-      {:db-services [{:name db1-name :script-name "alice.sql" :port 55432}
-                     {:name db2-name :script-name "bob.sql" :port 55433}]}))
+  (:require [clostache.parser :as p]
+            [clojure.spec.alpha :as s]
+            [config]))
 
 (defn- generate-docker-compose
-  [template-path]
+  [conf template-path]
   (let [template (slurp template-path)
-        db1-name (->> (nth (env :db-services) 0) :name)
-        db2-name (->> (nth (env :db-services) 1) :name)]
-    (p/render template (merge env {:db1-name db1-name
-                                   :db2-name db2-name}))))
+        db-service-names (map :name (-> conf :db-services))]
+    (p/render template (merge conf {:db1-name (nth db-service-names 0)
+                                             :db2-name (nth db-service-names 1)}))))
+
 
 (defn -main
-  [& args]
-  (let [template (generate-docker-compose (nth args 0))]
-    (spit (nth args 1) template)))
+  "Generate docker-compses file from a template.
+  The number of the arguments is 2.
+  The first is the template file. The second is the output file."
+  [& args]  
+  (let [template-file-path (nth args 0)
+        output-path (nth args 1)
+        template (generate-docker-compose config/config template-file-path)]
+    (spit output-path template)))
 
