@@ -1,7 +1,8 @@
 (ns jepsen-xa.client
   (:require [integrant.core :as ig]
             [jepsen.tests :as tests]
-            [jepsen.control.docker :as docker]            
+            [jepsen.control.docker :as docker]
+            [jepsen.os.debian :as debian]
             [jepsen-xa.log :as log]
             [jepsen.cli :as cli]))
 
@@ -16,13 +17,15 @@
    :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                              :logger (ig/ref :jepsen-xa.boundary.log/level)}})
 
+; coreを実行して試す。コマンドラインから実行するケースとreplを用いする。
 (defn make-xa-test
   [_]
   (merge tests/noop-test
          {:name "xa"
           :pure-generators true
+          :os   debian/os          
           :remote docker/docker
-                                        ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
+          ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
           :nodes [
                   "127.0.0.1:55432"                  ,
                   "127.0.0.1:55433",

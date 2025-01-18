@@ -7,5 +7,9 @@ COPY resources resourcesa
 RUN lein compile
 RUN lein with-profiles app uberjar
 FROM openjdk:25-slim-bookworm
+RUN apt-get update && \
+	apt-get install -y sudo && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 COPY --from=build /tmp/target/jepsen-xa-app-standalone.jar /jepsen-xa-app-standalone.jar
 ENTRYPOINT ["java", "-jar", "/jepsen-xa-app-standalone.jar"]
