@@ -15,6 +15,8 @@
                                        :app {:host-port 3001}}
               :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
                                                         :lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
+                                                        :db-spec1 {:port 55432 :host "127.0.0.1" }
+                                                        :db-spec2 {:port 55433 :host "127.0.0.1"}
                                                         :nodes (ig/ref :jepsen-xa.client/nodes)}
               :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)}              
               :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)

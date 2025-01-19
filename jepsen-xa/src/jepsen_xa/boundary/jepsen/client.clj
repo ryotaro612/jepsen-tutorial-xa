@@ -1,12 +1,13 @@
 (ns jepsen-xa.boundary.jepsen.client
   (:require [integrant.core :as ig]
             [jepsen-xa.log :as log]
+            [jepsen-xa.balance :as balance]
             [clojure.spec.alpha :as s]
-            
+
             [jepsen
              [client :as client]]))
 
-(defrecord ClientGateway [nodes logger lookup]
+(defrecord ClientGateway [nodes logger lookup db-spec1 db-spec2]
   client/Client
   (open! [this test node]
     (log/debug logger {:message ""
@@ -20,14 +21,26 @@
     (log/debug logger {:message ""
                        :func "invoke!"
                        :op op})
-    (assoc op :type :ok, :value 0))
+    (assoc op :type :ok, :value (balance/lookup lookup db-spec1 "alice")))
 
   (teardown! [this test])
 
   (close! [_ test]))
 
+(s/fdef ClientGateway
+  :args (s/cat :nodes any?
+               :logger any?
+               :lookup any?
+               :db-spec1 any?
+               :db-spec2 any?)
+  ;:ret
+  )
 
-(defmethod ig/init-key ::client [_ {:keys [nodes logger lookup]}]
+(defmethod ig/init-key ::client [_ {:keys [nodes logger lookup db-spec1 db-spec2]}]
   (log/debug logger {:message "init client"
                      :nodes nodes})
-  (map->ClientGateway {:nodes nodes :logger logger :lookup lookup}))
+  (map->ClientGateway {:nodes nodes
+                       :logger logger
+                       :lookup lookup
+                       :db-spec1 db-spec1
+                       :db-spec2 db-spec2}))

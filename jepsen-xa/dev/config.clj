@@ -3,19 +3,24 @@
             ; the spec of jdbc make db/with-connection fail
             ;[clojure.java.jdbc.spec :as jdbc]
             ))
+
+(defn- make-db-config
+  [partial]
+  (merge {:dbtype "postgresql"
+          :host "127.0.0.1"
+          :dbname "postgres"
+          :user "postgres"
+          :password "password"}
+         partial))
+
 (def config
-  {:db-services [{:name "jepsen-tutorial-xa-db1"
-                  :script-name "alice.sql"
-                  :host "127.0.0.1"
-                  :port 55432
-                  :dbname "postgres"
-                  :password "password"}
-                 {:name "jepsen-tutorial-xa-db2"
-                  :script-name "bob.sql"
-                  :host "127.0.0.1"
-                  :port 55433
-                  :dbname "postgres"
-                  :password "password"}]
+  {:db-services (map #(make-db-config %) [{:name "jepsen-tutorial-xa-db1"
+                                           :script-name "alice.sql"                                           
+                                           :port 55432}
+                                          {:name "jepsen-tutorial-xa-db2"
+                                           :script-name "bob.sql"
+                                           :port 55433}
+                                          ])
    :app {:host-port 3001}})
 
 

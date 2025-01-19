@@ -24,7 +24,8 @@
    :jepsen-xa.client/nodes {:db-specs db-specs :app app}
    :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
                                              :lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
-                                             
+                                             :db-spec1 (:db1 db-specs)
+                                             :db-spec2 (:db2 db-specs)
                                              :nodes (ig/ref :jepsen-xa.client/nodes)}
    :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)}
    :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
