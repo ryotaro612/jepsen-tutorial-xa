@@ -10,7 +10,7 @@ services:
     ports:
       - {{port}}:5432
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: {{password}}
 {{/db-services}}
   app:
     build:

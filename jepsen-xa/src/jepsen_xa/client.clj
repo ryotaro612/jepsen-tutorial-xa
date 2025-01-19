@@ -4,8 +4,8 @@
             [jepsen.os.debian :as debian]
             [jepsen
              [db :as db]
-             [generator :as gen]             
-             [client :as client]             
+             [generator :as gen]
+             [client :as client]
              [tests :as tests]
              [cli :as cli]]
             [clojure.spec.alpha :as s]
