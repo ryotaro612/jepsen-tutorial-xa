@@ -29,7 +29,7 @@
 
 (defrecord TransferHttpClient [logger url]
   b/Transfer
-  (transfer [_ sender amount]
+  (transaction [_ sender amount]
     ; sender 文字列
     (log/debug logger {:message "transfer"
                        :sender sender

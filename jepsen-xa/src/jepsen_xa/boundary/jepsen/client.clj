@@ -1,6 +1,7 @@
 (ns jepsen-xa.boundary.jepsen.client
   (:require [integrant.core :as ig]
             [jepsen-xa.log :as log]
+            [taoensso.timbre :as timbre]
             [jepsen-xa.balance :as balance]
             [clojure.spec.alpha :as s]
             [jepsen
@@ -25,18 +26,21 @@
       :read-alice (assoc op :type :ok, :value (balance/lookup lookup db-spec1 "alice"))
       :read-bob (assoc op :type :ok, :value (balance/lookup lookup db-spec2 "bob"))
       :transfer (let [{{:keys [sender amount]} :value} op]
-                  (assoc op :type :ok, :value (balance/transfer transfer sender amount)))))
+                  (timbre/debug "transfer" {:sender sender
+                                            :amount amount})
+                  (assoc op :type :ok, :value (balance/transaction transfer sender amount)))))
 
   (teardown! [this test])
 
   (close! [_ test]))
 
-(s/fdef ClientGateway
+(s/fdef map->ClientGateway
   :args (s/cat :nodes any?
                :logger any?
                :lookup any?
                :db-spec1 any?
-               :db-spec2 any?)
+               :db-spec2 any?
+               :transfer :jepsen-xa.balance/transfer)
   ;:ret
   )
 
@@ -48,4 +52,5 @@
                        :logger logger
                        :lookup lookup
                        :db-spec1 db-spec1
-                       :db-spec2 db-spec2}))
+                       :db-spec2 db-spec2
+                       :transfer transfer}))
