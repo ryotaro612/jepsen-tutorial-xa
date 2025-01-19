@@ -26,25 +26,26 @@
                                              :lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
                                              :db-spec1 (:db1 db-specs)
                                              :db-spec2 (:db2 db-specs)
+                                             :transfer (ig/ref :jepsen-xa.boundary.balance/transfer)
                                              :nodes (ig/ref :jepsen-xa.client/nodes)}
-   :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)}
+   :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)} 
+   :jepsen-xa.boundary.balance/transfer {:logger (ig/ref :jepsen-xa.boundary.log/level)
+                                         :url (str "http://127.0.0.1:" (:host-port app))}
    :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
                               :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)}
    :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                              :logger (ig/ref :jepsen-xa.boundary.log/level)}})
 
 
-
-; coreを実行して試す。コマンドラインから実行するケースとreplを用いる。
 (defn- make-xa-test
   [opts]
-  ; TODO reify dbでログを出力できるようにする
+
   (merge tests/noop-test
          {:name "xa"
           :pure-generators true
           :os debian/os
           :remote docker/docker
-                                        ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
+          ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
           :generator   (->> (gen/mix [invocation/read-alice
                                       invocation/read-bob
                                       invocation/transfer])

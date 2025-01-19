@@ -3,11 +3,11 @@
             [jepsen-xa.log :as log]
             [jepsen-xa.balance :as balance]
             [clojure.spec.alpha :as s]
-
             [jepsen
              [client :as client]]))
 
-(defrecord ClientGateway [nodes logger lookup db-spec1 db-spec2]
+(defrecord ClientGateway
+    [nodes logger lookup db-spec1 db-spec2 transfer]
   client/Client
   (open! [this test node]
     (log/debug logger {:message ""
@@ -23,7 +23,9 @@
                        :op op})
     (case (:f op)
       :read-alice (assoc op :type :ok, :value (balance/lookup lookup db-spec1 "alice"))
-      :read-bob (assoc op :type :ok, :value (balance/lookup lookup db-spec2 "bob"))))
+      :read-bob (assoc op :type :ok, :value (balance/lookup lookup db-spec2 "bob"))
+      :transfer (let [{{:keys [sender amount]} :value} op]
+                  (assoc op :type :ok, :value (balance/transfer transfer sender amount)))))
 
   (teardown! [this test])
 
@@ -38,8 +40,9 @@
   ;:ret
   )
 
-(defmethod ig/init-key ::client [_ {:keys [nodes logger lookup db-spec1 db-spec2]}]
-  (log/debug logger {:message "init client"
+(defmethod ig/init-key ::client
+  [_ {:keys [nodes logger lookup db-spec1 db-spec2 transfer]}]
+  (log/debug logger {:message "init a jepsen client"
                      :nodes nodes})
   (map->ClientGateway {:nodes nodes
                        :logger logger

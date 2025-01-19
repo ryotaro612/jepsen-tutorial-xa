@@ -5,6 +5,9 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [com.taoensso/timbre "6.6.1"]
+                 ;; https://mvnrepository.com/artifact/http-kit/http-kit
+                 [http-kit/http-kit "2.8.0"]
+                 [org.clojure/data.json "2.5.1"]
                  [com.taoensso/timbre-slf4j "6.6.1"]                 
                  [compojure "1.7.1"]
                  [ring/ring-core "1.13.0"]

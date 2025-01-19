@@ -25,7 +25,7 @@
 
 (defmethod ig/init-key ::level [_ {:keys [app other] :as opts}]
   (let [config (merge timbre/default-config (load-config app other))]
-    ; handle jetty's logging message.
+                                        ; handle jetty's logging message.
     (timbre/set-config! config)
     (map->TimbreLogger {:config config})))
 
@@ -33,3 +33,4 @@
   (timbre/debug {:message "Update the timbre config."
                  :config timbre/default-config})
   (timbre/set-config! timbre/default-config))
+

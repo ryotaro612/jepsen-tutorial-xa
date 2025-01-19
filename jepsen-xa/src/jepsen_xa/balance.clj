@@ -13,3 +13,17 @@
 
 (s/def ::balance-lookup #(satisfies? BalanceLookUp %))
 
+
+(defprotocol Transfer
+  "Transfer money from one account to another."
+  (transfer [this sender amount] "Transfer money from one account to another."))
+
+(s/def ::transfer #(satisfies? Transfer %))
+
+
+(s/def ::sender #{:alice :bob})
+(s/def ::amount int?)
+(s/fdef transfer
+  :args (s/cat :sender ::sender
+                :amount ::amount))
+
