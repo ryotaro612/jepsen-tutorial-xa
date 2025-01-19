@@ -1,8 +1,10 @@
 (ns jepsen-xa.client
   (:require [integrant.core :as ig]
             [jepsen.control.docker :as docker]
+            [taoensso.timbre :as timbre]
             [jepsen.os.debian :as debian]
             [jepsen
+             [checker :as checker]
              [db :as db]
              [generator :as gen]
              [client :as client]
@@ -28,22 +30,28 @@
                                              :db-spec2 (:db2 db-specs)
                                              :transfer (ig/ref :jepsen-xa.boundary.balance/transfer)
                                              :nodes (ig/ref :jepsen-xa.client/nodes)}
+   :jepsen-xa.model/model {:lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
+                           :db-spec1 (:db1 db-specs)
+                           :db-spec2 (:db2 db-specs)}
    :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)} 
    :jepsen-xa.boundary.balance/transfer {:logger (ig/ref :jepsen-xa.boundary.log/level)
                                          :url (str "http://127.0.0.1:" (:host-port app))}
    :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
-                              :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)}
+                              :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)
+                              :model (ig/ref :jepsen-xa.model/model)}
    :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                              :logger (ig/ref :jepsen-xa.boundary.log/level)}})
 
 
 (defn- make-xa-test
-  [opts]
-
+  [{:keys [model] :as opts}]
   (merge tests/noop-test
          {:name "xa"
           :pure-generators true
           :os debian/os
+          :checker (checker/linearizable
+                             {:model   model
+                              :algorithm :linear})
           :remote docker/docker
           ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
           :generator   (->> (gen/mix [invocation/read-alice
@@ -58,15 +66,18 @@
 
 (s/def ::nodes (s/coll-of string?))
 (s/def ::client #(satisfies? client/Client %))
+(s/def ::test map?)
+(s/def ::model :jepsen-xa.model/model)
 (s/def ::opts
-  (s/keys :req-un [::nodes ::client]))
-
+  (s/keys :req-un [::nodes ::client ::model]))
 (s/fdef make-xa-test
   :args (s/cat :opts ::opts)
-  :ret int?)
+  :ret ::test)
 
-(defmethod ig/init-key ::test-fn [_ {:keys [nodes client]}]
-  (fn [_] (make-xa-test {:nodes nodes :client client})))
+(defmethod ig/init-key ::test-fn [_ opts]
+  (timbre/debug {:int-key ::test-fn
+                 :opts opts})
+  (fn [_] (make-xa-test opts)))
 
 (defmethod ig/init-key ::runner [_ {:keys [test-fn logger]}]
   (log/debug logger {:test-fn test-fn})

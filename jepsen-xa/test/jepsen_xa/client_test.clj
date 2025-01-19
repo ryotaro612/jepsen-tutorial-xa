@@ -10,20 +10,25 @@
               :jepsen-xa.spec/instrument {:enable true
                                           :logger (ig/ref :jepsen-xa.boundary.log/level)}
               :jepsen-xa.client/nodes {:db-specs
-                                       {:db1 {:port 55432 :host "127.0.0.1" }
+                                       {:db1 {:port 55432 :host "127.0.0.1"}
                                         :db2 {:port 55433 :host "127.0.0.1"}}
                                        :app {:host-port 3001}}
+              :jepsen-xa.model/model {:lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
+                                      :db-spec1 {:port 55432 :host "127.0.0.1"}
+                                      :db-spec2 {:port 55433 :host "127.0.0.1"}}
               :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
                                                         :lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
                                                         :db-spec1 {:port 55432 :host "127.0.0.1"}
                                                         :db-spec2 {:port 55433 :host "127.0.0.1"}
                                                         :transfer (ig/ref :jepsen-xa.boundary.balance/transfer)
-                                                        :nodes (ig/ref :jepsen-xa.client/nodes)}
+                                                        :nodes (ig/ref :jepsen-xa.client/nodes)
+                                                        }
               :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)}
               :jepsen-xa.boundary.balance/transfer {:logger (ig/ref :jepsen-xa.boundary.log/level)
                                                     :url "http://127.0.0.1:3001"}
               :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
-                                         :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)}
+                                         :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)
+                                         :model (ig/ref :jepsen-xa.model/model)}
               :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                                         :logger (ig/ref :jepsen-xa.boundary.log/level)}}
              ;actual

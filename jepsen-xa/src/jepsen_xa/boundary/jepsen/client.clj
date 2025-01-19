@@ -28,7 +28,10 @@
       :transfer (let [{{:keys [sender amount]} :value} op]
                   (timbre/debug "transfer" {:sender sender
                                             :amount amount})
-                  (assoc op :type :ok, :value (balance/transaction transfer sender amount)))))
+                  (assoc op :type :ok, :value
+                         (merge {:sender sender
+                                 :amount amount}
+                                (balance/transaction transfer sender amount))))))
 
   (teardown! [this test])
 
