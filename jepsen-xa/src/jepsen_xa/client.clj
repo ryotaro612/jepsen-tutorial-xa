@@ -1,9 +1,12 @@
 (ns jepsen-xa.client
   (:require [integrant.core :as ig]
             [jepsen.control.docker :as docker]
+            
             [taoensso.timbre :as timbre]
             [jepsen.os.debian :as debian]
+            
             [jepsen
+             [nemesis :as nemesis]             
              [checker :as checker]
              [db :as db]
              [generator :as gen]
@@ -13,7 +16,8 @@
             [clojure.spec.alpha :as s]
             [jepsen-xa
              [log :as log]
-             [invocation :as invocation]]
+             [invocation :as invocation]
+             [model :as model]]
             [jepsen-xa.boundary.jepsen.client]))
 
 (defn load-config
@@ -49,6 +53,7 @@
          {:name "xa"
           :pure-generators true
           :os debian/os
+          :nemesis         (nemesis/partition-random-halves)          
           :checker (checker/linearizable
                              {:model   model
                               :algorithm :linear})
@@ -58,7 +63,12 @@
                                       invocation/read-bob
                                       invocation/transfer])
                             (gen/stagger 1)
-                            (gen/nemesis nil)
+                          (gen/nemesis
+                            (cycle [(gen/sleep 5)
+                              {:type :info, :f :start}
+                              (gen/sleep 5)
+                              {:type :info, :f :stop}]))                            
+                          ;(gen/nemesis nil)
                             (gen/time-limit 15))
           }
          opts
