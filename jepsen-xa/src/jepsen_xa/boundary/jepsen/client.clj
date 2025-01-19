@@ -17,8 +17,10 @@
   (setup! [_ test])
 
   (invoke! [_ test op]
-
-    )
+    (log/debug logger {:message ""
+                       :func "invoke!"
+                       :op op})
+    (assoc op :type :ok, :value 0))
 
   (teardown! [this test])
 

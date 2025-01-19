@@ -17,9 +17,9 @@
 
 (defrecord BalnceLookUpPsql [logger]
   b/BalanceLookUp
-  (lookup [_ conn user-id]
+  (lookup [_ db-spec user-id]
     (jdbc/query
-     conn
+     db-spec
      ["select balance from account where user_id = ?" user-id])))
 
 

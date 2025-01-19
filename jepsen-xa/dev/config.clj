@@ -1,5 +1,6 @@
 (ns config
   (:require [clojure.spec.alpha :as s]
+            ; the spec of jdbc make db/with-connection fail
             ;[clojure.java.jdbc.spec :as jdbc]
             ))
 (def config

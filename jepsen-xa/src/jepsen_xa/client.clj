@@ -23,11 +23,15 @@
                                :logger (ig/ref :jepsen-xa.boundary.log/level)}
    :jepsen-xa.client/nodes {:db-specs db-specs :app app}
    :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
+                                             :lookup (ig/ref :jepsen-xa.boundary.balance/lookup)
+                                             
                                              :nodes (ig/ref :jepsen-xa.client/nodes)}
+   :jepsen-xa.boundary.balance/lookup {:logger (ig/ref :jepsen-xa.boundary.log/level)}
    :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
                               :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)}
    :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                              :logger (ig/ref :jepsen-xa.boundary.log/level)}})
+
 
 
 ; coreを実行して試す。コマンドラインから実行するケースとreplを用いる。
@@ -43,7 +47,8 @@
           :generator   (->> invocation/read-alice
                             (gen/stagger 1)
                             (gen/nemesis nil)
-                            (gen/time-limit 15))}
+                            (gen/time-limit 15))
+          }
          opts
          ))
 
