@@ -18,9 +18,9 @@
 (defrecord BalnceLookUpPsql [logger]
   b/BalanceLookUp
   (lookup [_ db-spec user-id]
-    (jdbc/query
+    (first (jdbc/query
      db-spec
-     ["select balance from account where user_id = ?" user-id])))
+     ["select balance from account where user_id = ?" user-id]))))
 
 
 (defmethod ig/init-key ::update [_ logger]

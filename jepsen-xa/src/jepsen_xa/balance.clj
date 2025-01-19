@@ -12,3 +12,4 @@
   (lookup [this db-spec user-id] "Return the balance of a user"))
 
 (s/def ::balance-lookup #(satisfies? BalanceLookUp %))
+

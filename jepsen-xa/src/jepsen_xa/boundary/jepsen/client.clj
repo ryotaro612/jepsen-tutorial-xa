@@ -21,7 +21,9 @@
     (log/debug logger {:message ""
                        :func "invoke!"
                        :op op})
-    (assoc op :type :ok, :value (balance/lookup lookup db-spec1 "alice")))
+    (case (:f op)
+      :read-alice (assoc op :type :ok, :value (balance/lookup lookup db-spec1 "alice"))
+      :read-bob (assoc op :type :ok, :value (balance/lookup lookup db-spec2 "bob"))))
 
   (teardown! [this test])
 
