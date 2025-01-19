@@ -46,7 +46,8 @@
           :remote docker/docker
                                         ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
           :generator   (->> (gen/mix [invocation/read-alice
-                                      invocation/read-bob])
+                                      invocation/read-bob
+                                      invocation/transfer])
                             (gen/stagger 1)
                             (gen/nemesis nil)
                             (gen/time-limit 15))

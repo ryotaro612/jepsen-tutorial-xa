@@ -2,6 +2,7 @@
   (:require [ring.adapter.jetty :as jetty]
             [integrant.core :as ig]
             [jepsen-xa.boundary.log]
+            [clojure.spec.alpha :as s]            
             [jepsen-xa.log :as log]
             [jepsen-xa.transaction]
             [jepsen-xa.boundary.balance]
@@ -32,6 +33,7 @@
              :join join
              :app (ig/ref ::app)}})
 
+
 (defn make-app-routes
   [transaction]
   (defroutes app-routes
@@ -42,6 +44,13 @@
           (= result {:error :invalid-arguments}) {:status 400 :body {:message "invalid arguments"}}
           (nil? result) {:status 201 :body {:message "success"}}
           :else {:status 500 :body {:message "internal server error"}})))))
+
+(s/def ::transaction
+  (s/fspec :args (s/cat :sender :jepsen-xa.transaction/sender
+                        :amount :jepsen-xa.transaction/amount)))
+
+(s/fdef make-app-routes
+  :args (s/cat :transaction ::transaction))
 
 (defmethod ig/init-key ::app [_ {:keys [transaction]}]
   (-> (make-app-routes transaction)
