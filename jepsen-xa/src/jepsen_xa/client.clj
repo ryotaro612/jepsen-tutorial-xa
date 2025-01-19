@@ -4,17 +4,20 @@
             [jepsen.os.debian :as debian]
             [jepsen
              [db :as db]
+             [generator :as gen]             
              [client :as client]             
              [tests :as tests]
              [cli :as cli]]
             [clojure.spec.alpha :as s]
-            [jepsen-xa.log :as log]
+            [jepsen-xa
+             [log :as log]
+             [invocation :as invocation]]
             [jepsen-xa.boundary.jepsen.client]))
 
 (defn load-config
   "Make the integramnt configuration map for the client."
   [{:keys [instrument db-specs app]
-    logger  :logger}]
+    logger :logger}]
   {:jepsen-xa.boundary.log/level logger
    :jepsen-xa.spec/instrument {:enable instrument
                                :logger (ig/ref :jepsen-xa.boundary.log/level)}
@@ -36,8 +39,11 @@
           :pure-generators true
           :os debian/os
           :remote docker/docker
-          ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
-          }
+                                        ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
+          :generator   (->> invocation/read-alice
+                            (gen/stagger 1)
+                            (gen/nemesis nil)
+                            (gen/time-limit 15))}
          opts
          ))
 

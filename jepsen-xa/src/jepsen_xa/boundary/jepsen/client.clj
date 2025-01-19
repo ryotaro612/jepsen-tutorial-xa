@@ -6,7 +6,7 @@
             [jepsen
              [client :as client]]))
 
-(defrecord ClientGateway [nodes logger]
+(defrecord ClientGateway [nodes logger lookup]
   client/Client
   (open! [this test node]
     (log/debug logger {:message ""
@@ -16,15 +16,17 @@
  
   (setup! [_ test])
 
-  (invoke! [_ test op])
+  (invoke! [_ test op]
+
+    )
 
   (teardown! [this test])
 
   (close! [_ test]))
 
 
-(defmethod ig/init-key ::client [_ {:keys [nodes logger]}]
+(defmethod ig/init-key ::client [_ {:keys [nodes logger lookup]}]
   (log/debug logger {:message "init client"
                      :nodes nodes})
-  (map->ClientGateway {:nodes nodes :logger logger}))
+  (map->ClientGateway {:nodes nodes :logger logger :lookup lookup}))
 

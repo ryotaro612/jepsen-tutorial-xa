@@ -12,6 +12,7 @@
 (s/def ::logger #(satisfies? Logger %))
 
 (defn log-level
+  "?"
   [level default]
   (case level
     "DEBUG" :debug

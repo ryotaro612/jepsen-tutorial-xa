@@ -14,5 +14,17 @@
       (.setString ps 2 user-id)
       (.execute ps))))
 
+
+(defrecord BalnceLookUpPsql [logger]
+  b/BalanceLookUp
+  (lookup [_ conn user-id]
+    (jdbc/query
+     conn
+     ["select balance from account where user_id = ?" user-id])))
+
+
 (defmethod ig/init-key ::update [_ logger]
   (map->BalanceUpdatePsql {:logger logger}))
+
+(defmethod ig/init-key ::lookup [_ logger]
+  (map->BalnceLookUpPsql {:logger logger}))

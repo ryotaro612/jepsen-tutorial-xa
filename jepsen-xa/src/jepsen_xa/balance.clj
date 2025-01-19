@@ -9,4 +9,6 @@
 
 (defprotocol BalanceLookUp
   "Return the balance of a user."
-  (lookup [this user-id amount] "Return the balance of a user"))
+  (lookup [this conn user-id] "Return the balance of a user"))
+
+(s/def ::balance-lookup #(satisfies? BalanceLookUp %))
