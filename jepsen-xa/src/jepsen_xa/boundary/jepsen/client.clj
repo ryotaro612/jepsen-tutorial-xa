@@ -29,4 +29,3 @@
   (log/debug logger {:message "init client"
                      :nodes nodes})
   (map->ClientGateway {:nodes nodes :logger logger :lookup lookup}))
-

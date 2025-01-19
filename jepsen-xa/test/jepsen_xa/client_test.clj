@@ -10,7 +10,7 @@
               :jepsen-xa.spec/instrument {:enable true
                                           :logger (ig/ref :jepsen-xa.boundary.log/level)}
               :jepsen-xa.client/nodes {:db-specs
-                                       {:db1 {:port 55432 :host "127.0.0.1"}
+                                       {:db1 {:port 55432 :host "127.0.0.1" }
                                         :db2 {:port 55433 :host "127.0.0.1"}}
                                        :app {:host-port 3001}}
               :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
