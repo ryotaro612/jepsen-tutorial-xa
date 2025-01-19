@@ -7,7 +7,9 @@
              [client :as client]             
              [tests :as tests]
              [cli :as cli]]
-            [jepsen-xa.log :as log]))
+            [clojure.spec.alpha :as s]
+            [jepsen-xa.log :as log]
+            [jepsen-xa.boundary.jepsen.client]))
 
 (defn load-config
   "Make the integramnt configuration map for the client."
@@ -17,26 +19,39 @@
    :jepsen-xa.spec/instrument {:enable instrument
                                :logger (ig/ref :jepsen-xa.boundary.log/level)}
    :jepsen-xa.client/nodes {:db-specs db-specs :app app}
-   :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)}
+   :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
+                                             :nodes (ig/ref :jepsen-xa.client/nodes)}
+   :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
+                              :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)}
    :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                              :logger (ig/ref :jepsen-xa.boundary.log/level)}})
 
-; coreを実行して試す。コマンドラインから実行するケースとreplを用いする。
-(defn make-xa-test
+
+; coreを実行して試す。コマンドラインから実行するケースとreplを用いる。
+(defn- make-xa-test
   [opts]
   ; TODO reify dbでログを出力できるようにする
   (merge tests/noop-test
          {:name "xa"
           :pure-generators true
-          :os   debian/os          
+          :os debian/os
           :remote docker/docker
           ; https://jepsen-io.github.io/jepsen/jepsen.control.docker.html#var-resolve-container-id
           }
          opts
          ))
 
-(defmethod ig/init-key ::test-fn [_ {:keys [nodes]}]
-  (fn [_] (make-xa-test {:nodes nodes})))
+(s/def ::nodes (s/coll-of string?))
+(s/def ::client #(satisfies? client/Client %))
+(s/def ::opts
+  (s/keys :req-un [::nodes ::client]))
+
+(s/fdef make-xa-test
+  :args (s/cat :opts ::opts)
+  :ret int?)
+
+(defmethod ig/init-key ::test-fn [_ {:keys [nodes client]}]
+  (fn [_] (make-xa-test {:nodes nodes :client client})))
 
 (defmethod ig/init-key ::runner [_ {:keys [test-fn logger]}]
   (log/debug logger {:test-fn test-fn})

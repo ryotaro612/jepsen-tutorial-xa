@@ -13,15 +13,18 @@
                                        {:db1 {:port 55432 :host "127.0.0.1"}
                                         :db2 {:port 55433 :host "127.0.0.1"}}
                                        :app {:host-port 3001}}
+              :jepsen-xa.boundary.jepsen.client/client {:logger (ig/ref :jepsen-xa.boundary.log/level)
+                                                        :nodes (ig/ref :jepsen-xa.client/nodes)}
               :jepsen-xa.client/test-fn {:nodes (ig/ref :jepsen-xa.client/nodes)
-                                         }
+                                         :client (ig/ref :jepsen-xa.boundary.jepsen.client/client)}
               :jepsen-xa.client/runner {:test-fn (ig/ref :jepsen-xa.client/test-fn)
                                         :logger (ig/ref :jepsen-xa.boundary.log/level)}}
              ;actual
              (load-config {:logger {:app :debug :other :info}
-                               :instrument true
-                               :db-specs {:db1 {:port 55432 :host "127.0.0.1"}
-                                          :db2 {:port 55433 :host "127.0.0.1"}}
+                           :instrument true
+                           :db-specs {:db1 {:port 55432 :host "127.0.0.1"}
+                                      :db2 {:port 55433 :host "127.0.0.1"}}
                            :app {:host-port 3001}}))
-          
+
           "Failure"))))
+

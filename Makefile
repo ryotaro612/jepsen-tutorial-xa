@@ -17,6 +17,10 @@ format: ## Format the code of jepsen-xa.
 test: ## Run the tests.
 	cd jepsen-xa && lein test
 
+.PHONY: test-refresh
+test-refresh: ## Run the tests on save.
+	cd jepsen-xa && lein test-refresh
+
 ##@ Build
 build/docker-compose.yml: docker-compose.template jepsen-xa/dev/docker.clj jepsen-xa/Dockerfile $(shell find db) $(shell find jepsen-xa/src)
 	mkdir -p build
