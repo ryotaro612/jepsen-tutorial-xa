@@ -11,6 +11,9 @@ services:
       - {{port}}:5432
     environment:
       POSTGRES_PASSWORD: {{password}}
+    # iptables that used by nemesis requries NET_ADMIN
+    cap_add:
+      - NET_ADMIN
 {{/db-services}}
   app:
     build:
@@ -22,3 +25,5 @@ services:
       DB1_HOST: {{db1-name}}
       DB2_HOST: {{db2-name}}
       APP_LOG_LEVEL: DEBUG
+    cap_add:
+      - NET_ADMIN
