@@ -1,8 +1,5 @@
 (ns config
-  (:require [clojure.spec.alpha :as s]
-            ; the spec of jdbc make db/with-connection fail
-            ;[clojure.java.jdbc.spec :as jdbc]
-            ))
+  (:require [clojure.spec.alpha :as s]))
 
 (defn- make-db-config
   [partial]
@@ -14,14 +11,14 @@
          partial))
 
 (def config
-  {:db-services (map #(make-db-config %) [{:name "jepsen-tutorial-xa-db1"
+  "The configuration for the server, databases and client."
+  {:db-services (map #(make-db-config %) [{:container-name "jepsen-tutorial-xa-db1"
                                            :script-name "alice.sql"                                           
                                            :port 55432}
-                                          {:name "jepsen-tutorial-xa-db2"
+                                          {:container-name "jepsen-tutorial-xa-db2"
                                            :script-name "bob.sql"
-                                           :port 55433}
-                                          ])
-   :app {:host-port 3001}})
+                                           :port 55433}])
+   :app {:host-port 3001 :container-name "jepsen-tutorial-xa-app"}})
 
 
 (s/def ::app any?)

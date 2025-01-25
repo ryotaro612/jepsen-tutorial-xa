@@ -21,7 +21,6 @@
 
 (defn- do-command!
   [conn sql]
-  #_(println conn sqlem)
   (with-open [ps (jdbc/prepare-statement
                   conn sql)]
     (.execute ps)))

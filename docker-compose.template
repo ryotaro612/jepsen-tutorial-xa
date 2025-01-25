@@ -1,12 +1,12 @@
 services:
 {{#db-services}}
-  {{name}}:
+  {{container-name}}:
     build:
       context: ../db
       dockerfile: Dockerfile
       args:
         INIT_SQL_SCRIPT: {{script-name}}
-    container_name: {{name}}
+    container_name: {{container-name}}
     ports:
       - {{port}}:5432
     environment:

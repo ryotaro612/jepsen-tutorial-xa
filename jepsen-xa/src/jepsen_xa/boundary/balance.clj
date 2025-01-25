@@ -42,19 +42,6 @@
                                     })]
       {:success (= (:status response) 201)})))
 
-#_{:opts
- {:headers
-  {"content-type" "application/json", "accept" "application/json"},
-  :body "{\"sender\":\"alice\",\"amount\":1000}",
-  :method :post,
-  :url "http://localhost:3000/transactions"},
- :body "{\"message\":\"success\"}",
- :headers
- {:content-type "application/json;charset=utf-8",
-  :date "Sun, 19 Jan 2025 11:47:12 GMT",
-  :server "Jetty(11.0.24)",
-  :transfer-encoding "chunked"},
- :status 201}
 
 (defmethod ig/init-key ::update [_ logger]
   (map->BalanceUpdatePsql {:logger logger}))
