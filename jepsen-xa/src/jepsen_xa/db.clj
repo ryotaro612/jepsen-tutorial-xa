@@ -6,7 +6,7 @@
 (defn- do-command
   [conn sql]
   (with-open [ps (jdbc/prepare-statement
-                  conn sql)]
+                  conn sql {:timeout 30})]
     (.execute ps)))
 
 (defn begin!

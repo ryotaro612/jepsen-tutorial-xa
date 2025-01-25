@@ -69,7 +69,7 @@
          {:name "xa"
           :pure-generators true
           :os debian/os
-          :nemesis (nemesis/partition-random-halves)          
+          :nemesis (nemesis/partition-random-node) ;(nemesis/partition-random-halves)
           :checker (checker/linearizable
                     {:model   model
                      :algorithm :linear})
@@ -80,12 +80,12 @@
                                       invocation/transfer])
                             (gen/stagger 1)
                           (gen/nemesis
-                            (cycle [(gen/sleep 5)
+                            (cycle [(gen/sleep 1000)
                               {:type :info, :f :start}
-                              (gen/sleep 5)
+                              (gen/sleep 0.500)
                               {:type :info, :f :stop}]))                  
                           ;(gen/nemesis nil)
-                          (gen/time-limit 15))
+                          (gen/time-limit 60))
           }
          opts
          ))

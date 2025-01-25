@@ -1,6 +1,7 @@
 (ns jepsen-xa.transaction
   (:require [integrant.core :as ig]
             [clojure.spec.alpha :as s]
+            [taoensso.timbre :as timbre]            
             [jepsen-xa.balance :as b]
             [jepsen-xa.log]
             [slingshot.slingshot :refer [throw+ try+]]
@@ -31,6 +32,7 @@
                    :amount amount})
   (let [{:keys [alice bob]} (compute-delta sender amount)
         transaction-id (db/generate-transaction-id)]
+    (try+
     (db/with-connection [alice-conn db-spec1]
       (db/begin! alice-conn)
       (l/debug logger {:transaction-id transaction-id
@@ -42,7 +44,11 @@
        (db/prepare-transaction! alice-conn transaction-id)
        (l/debug logger {:transaction-id transaction-id
                         :message "alice prepare-transaction"})
-       (catch Object _
+       (catch Object e
+         (timbre/error {:message "transaction! alice failed"
+                        :sender sender
+                        :amount amount
+                        :error e})
          (db/rollback! alice-conn)
          (throw+)))
       (db/with-connection [bob-conn db-spec2]
@@ -62,11 +68,12 @@
          (l/debug logger {:transaction-id transaction-id
                           :user "bob"
                           :message "prepare-transaction"})
-         (catch Object _
+         (catch Object e
            (try+
             (db/rollback! bob-conn)
             (l/debug logger {:transaction-id transaction-id
                              :user "bob"
+                             :error e
                              :message "rollback"})
             (finally
               (db/rollback-prepared! alice-conn transaction-id)))
@@ -80,7 +87,14 @@
            (db/commit-prepared! bob-conn transaction-id)
            (l/debug logger {:transaction-id transaction-id
                             :user "bob"
-                            :message "commit prepared"})))))))
+                            :message "commit prepared"})))))
+    (catch Object _
+     (timbre/error{:message "transaction!"
+                    :sender sender
+                    :amount amount
+                    :error "transaction failed"})
+      (throw+)))
+))
 
 (s/def ::db-spec1 #(map? %))
 (s/def ::db-spec2 #(map? %))

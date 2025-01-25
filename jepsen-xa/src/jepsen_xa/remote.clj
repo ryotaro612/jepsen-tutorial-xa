@@ -14,11 +14,27 @@
   (disconnect! [this] this)
   (execute! [this context action]
     ; :context {:dir "/", :sudo nil, :sudo-password nil}, :action {:cmd "cd /; hostname"}
-    (timbre/debug {:record "DockerRemote" :this this :method "execute!" :context context :action action})
     (let [{:keys [dir sudo sudo-password]} context
-          {:keys [cmd]} action]
-      (apply sh "docker" "exec" container-name "sh" "-c" cmd
+          {:keys [cmd]} action
+          {:keys [exit out err] :as result} (apply sh "docker" "exec" container-name "sh" "-c" cmd
              (if-let [in (:in action)]
                [:in in]
-               [])))))
+               []))]
+      (timbre/debug {:record "DockerRemote"
+                     :container-name container-name
+                     :func "execute!"
+                     :action action
+                     :context context
+                     :exit exit :out out :err err})
+      (if (not (zero? exit))
+        (timbre/error {:record "DockerRemote"
+                     :container-name container-name                       
+                     :func "execute!"
+                     :action action
+                     :context context
+                     :exit exit :out out :err err}))
+      
+        result
+      #_(if (not (zero? exit))
+        (throw (ex-info "Command failed" {:exit exit :out out :err err}))))))
 

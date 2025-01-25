@@ -7,12 +7,12 @@
             [clojure.java.jdbc :as jdbc]
             [integrant.core :as ig]))
 
-(defrecord BalanceUpdatePsql [logger]
+(defrecord BalanceUpdatePsql []
   b/BalanceUpdate
   (add-balance [_ conn user-id amount]
     (with-open [ps (jdbc/prepare-statement
                     conn
-                    "update account set balance = balance + ? where user_id = ?")]
+                    "update account set balance = balance + ? where user_id = ?" {:timeout 1000})]
       (.setInt ps 1 amount)
       (.setString ps 2 user-id)
       (.execute ps))))
@@ -39,15 +39,17 @@
                                               "accept" "application/json"}
                                     :body (json/write-str {:sender (sender {:alice "alice" :bob "bob"})
                                                            :amount amount})
+                                    ;:timeout 1000
+                                    ;:connect-timeout 1000
                                     })]
       {:success (= (:status response) 201)})))
 
 
-(defmethod ig/init-key ::update [_ logger]
-  (map->BalanceUpdatePsql {:logger logger}))
+(defmethod ig/init-key ::update [_ _]
+  (map->BalanceUpdatePsql {}))
 
-(defmethod ig/init-key ::lookup [_ logger]
-  (map->BalnceLookUpPsql {:logger logger}))
+(defmethod ig/init-key ::lookup [_ _]
+  (map->BalnceLookUpPsql {}))
 
 (defmethod ig/init-key ::transfer [_ {:keys [logger url]}]
   (log/debug logger {:message "init a transfer client"
