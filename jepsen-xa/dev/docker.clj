@@ -6,7 +6,7 @@
 (defn- generate-docker-compose
   [conf template-path]
   (let [template (slurp template-path)
-        db-service-names (map :name (-> conf :db-services))]
+        db-service-names (map :container-name (-> conf :db-services))]
     (p/render template (merge conf {:db1-name (nth db-service-names 0)
                                     :db2-name (nth db-service-names 1)}))))
 
